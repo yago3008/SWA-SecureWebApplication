@@ -1,7 +1,18 @@
-const { decode } = require("punycode");
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
 const Product = require("../models/product");
-const Cart = require("../models/cart");
+const Cart = require("../models/Cart");
 const crypto = require('crypto');
+const Token = require('../models/Token');
+const jwt = require('jsonwebtoken');
+const { Op } = require("sequelize");
+
+const hashPassword = async (newPassword) => {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    return hashedPassword
+
+};
 
 const quantityAvailable = async (productId, quantity)=> {
     const item = await Product.findByPk(productId);
@@ -33,7 +44,6 @@ const encodeTranslationId = (id) => {
     let encrypted = cipher.update(String(id), 'utf-8', 'hex');
     encrypted += cipher.final('hex');
     const encryptedId = iv.toString('hex') + ':' + encrypted
-    console.log(encryptedId)
     return encryptedId
 };
 
@@ -50,7 +60,6 @@ const decodeTranslationId = (encryptedId) => {
     let decrypted = decipher.update(encryptedText, 'hex', 'utf-8');
     decrypted += decipher.final('utf-8');
 
-    console.log("Decrypted Value:", decrypted);
     const decodedId = Number(decrypted.trim());
 
     return decodedId;
@@ -71,11 +80,52 @@ const deleteCart = async (userId) => {
     return(cart);
 };
 
+const getExpirationFromToken = (token) => {
+     const decoded = jwt.decode(token);
+    try {
+        const decoded = jwt.decode(token);
+        
+        if (!decoded || !decoded.exp) {
+            throw new Error('Token não contém informação de expiração');
+        }
+        
+        return decoded.exp * 1000;
+    } catch (error) {
+        throw new Error('Erro ao decodificar o token: ' + error.message);
+    }
+};
+
+const deleteExpiredTokens = async () => {
+    try {
+        const currentDateTime = new Date();
+        const expiredTokens = await Token.findAll({
+            where: {
+                expiresIn: {
+                    [Op.lt]: currentDateTime
+                }
+            }
+        });
+
+        if (expiredTokens.length > 0) {
+            const idsToDelete = expiredTokens.map(token => token.id);
+            await Token.destroy({
+                where: {
+                    id: idsToDelete
+                }
+            });
+        };
+    } catch (error) {
+    }
+};
+
 module.exports = {
+    hashPassword,
     quantityAvailable,
     decreaseStock,
     encodeTranslationId,
     decodeTranslationId,
     getProductsAndQuantity,
-    deleteCart
+    deleteCart,
+    getExpirationFromToken,
+    deleteExpiredTokens
 };

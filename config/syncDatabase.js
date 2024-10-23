@@ -1,6 +1,6 @@
 const { sequelize } = require('./database');
 const { User, Product, Cart, Payment  } = require('../models/app');
-const { hashPassword } = require('../services/userService');
+const { hashPassword } = require('../services/handlerService');
 const ATT_DATABASE = false;
 
 
@@ -23,6 +23,8 @@ const createAdmin = async () => {
                 username: 'admin',
                 password: await hashPassword('admin'),
                 role: 'admin',
+                email: 'admin@admin.com',
+                emailConfirmed: 'true'
             });
         } catch (err) {
             console.error('Error creating the admin user:', err);

@@ -6,7 +6,7 @@ const { isAdmin } = require('../middleware/auth');
 router
 
     .post('/', isAdmin, newProductController)
-    .get('/', isAdmin, getProductController)
+    .get('/', getProductController)
     .put('/:productId', isAdmin, updateProductController)
     .delete('/:productId', isAdmin, deleteProductController);
 

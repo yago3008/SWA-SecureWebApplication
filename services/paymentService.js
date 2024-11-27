@@ -7,7 +7,7 @@ const { decreaseStock, encodeTranslationId, getProductsAndQuantity, decodeTransl
 
 
 const createTransaction = async (userId, paymentMethod) => {
-    const cart = await Cart.findOne({ where: userId });
+    const cart = await Cart.findOne({ where: { userId } });
     try{
         const transaction = await Payment.create({
             userId: userId,
@@ -24,7 +24,7 @@ const createTransaction = async (userId, paymentMethod) => {
 };
 
 const paymentCreditCardService = async (userId) => {
-    const cart = await Cart.findOne({ where: userId });
+    const cart = await Cart.findOne({ where: { userId } });
     
     if (!cart) {
         throw new Error('Cart is empty');
@@ -40,7 +40,7 @@ const paymentCreditCardService = async (userId) => {
 };
 
 const paymentPixService = async (userId) => {
-    const cart = await Cart.findOne({ where: userId });
+    const cart = await Cart.findOne({ where: { userId } });
     
     if (!cart) {
         throw new Error('Cart is empty');

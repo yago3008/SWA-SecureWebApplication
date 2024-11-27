@@ -1,7 +1,6 @@
 const { registerUserService, loginUserService, changePasswordService } = require('../services/userService');
 
 const registerController = async (req, res) => {
-
     const { username, password } = req.body;
 
     try{

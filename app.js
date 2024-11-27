@@ -6,16 +6,15 @@ const userRoute = require('./routes/userRoute');
 const productRoute = require('./routes/productRoute');
 const cartRoute = require('./routes/cartRoute');
 const paymentRoute = require('./routes/paymentRoute');
+const cors = require('cors');
 
 app
-    .get('/', (req, res) => {
-        res.send('Servidor rodando!');
-    })
+    .use(cors({origin: '*'}))
     .use('/user', userRoute)
     .use('/product', productRoute)
     .use('/cart', cartRoute)
     .use('/payment', paymentRoute);
-
+    
 syncDatabase();
 
 app.listen(3000, () => {

@@ -1,6 +1,6 @@
 const { decode } = require("punycode");
 const Product = require("../models/product");
-const Cart = require("../models/cart");
+const Cart = require("../models/Cart");
 const crypto = require('crypto');
 
 const quantityAvailable = async (productId, quantity)=> {
@@ -61,7 +61,7 @@ const getProductsAndQuantity = async (cart) => {
 };
 
 const deleteCart = async (userId) => {
-    const cart = await Cart.findOne({ where: userId });
+    const cart = await Cart.findOne({ where: { userId } });
 
     if(!cart){
         throw new Error("cart not found")

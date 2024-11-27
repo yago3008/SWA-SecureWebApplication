@@ -3,7 +3,6 @@ const { deleteCart } = require("../services/handlerService");
 
 const paymentCreditCardController = async (req, res) => {
     const userId = req.user.id;
-
     try{
         const transactionId = await paymentCreditCardService(userId)
         deleteCart(userId);
@@ -18,7 +17,7 @@ const paymentPixController = async (req, res) => {
     const userId = req.user.id;
 
     try{
-        const transactionId = await paymentCreditCardService(userId)
+        const transactionId = await paymentPixService(userId)
         deleteCart(userId);
         res.status(200).json({ message: 'Payment success', transactionId: transactionId });
     } catch (err) {
